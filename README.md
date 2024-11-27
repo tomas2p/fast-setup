@@ -4,17 +4,11 @@ Fast-Setup is a tool designed to simplify project setup by automatically generat
 
 This project includes three main versions, each implemented differently to explore various technologies and approaches. Below is an overview of each version with links to their respective READMEs for more details.
 
----
-
 ## Versions
 
 ### 1. Bash Script
 
 This version uses a Bash script to create project structures. It is ideal for Unix/Linux environments and for those who prefer simple shell scripting solutions.
-
-More details in the Bash version README
-
----
 
 ### 2. Python with JSON
 
@@ -22,15 +16,11 @@ This version leverages Python with a JSON configuration file. It provides a more
 
 [More details in the Python-JSON version README](v2-python-json/README.md)
 
----
-
 ### 3. Python with YAML
 
 The latest and most advanced version uses Python with a YAML configuration file. This approach improves readability and flexibility, making it suitable for more complex or detailed configurations.
 
 [More details in the Python-YAML version README](v3-python-yaml/README.md)
-
----
 
 ## Purpose
 
