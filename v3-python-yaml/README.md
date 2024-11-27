@@ -87,4 +87,4 @@ For example:
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE file](../LICENSE.md) for details.
+This project is licensed under the MIT License. See the [LICENSE file](../LICENSE) for details.
