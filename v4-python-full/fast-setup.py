@@ -1,22 +1,37 @@
 import os
+import json
 import yaml
 import shutil
 import sys
 
-# Archivo structure.yaml
-STRUCTURE_FILE = './templates/structure.yaml'
+# Archivos de plantillas
+YAML_FILE = "./templates/structure.yaml"
+JSON_FILE = "./templates/structure.json"
+
 
 def load_templates():
-    """Carga las plantillas desde structure.yaml."""
-    with open(STRUCTURE_FILE, 'r') as file:
-        return yaml.safe_load(file)
+    """Carga las plantillas desde structure.yaml o structure.json."""
+    if os.path.exists(YAML_FILE):
+        with open(YAML_FILE, "r") as file:
+            return yaml.safe_load(file)
+    elif os.path.exists(JSON_FILE):
+        with open(JSON_FILE, "r") as file:
+            return json.load(file)
+    else:
+        print("Error: No se encontró un archivo de plantilla válido.")
+        sys.exit(1)
+
 
 def create_structure(project_name, project_path, structure):
     """Crea los directorios y archivos según la plantilla."""
     # Crear directorios
-    for directory in structure.get('directories', []):
-        dir_path = os.path.join(project_path, directory.replace('project_name', project_name))
-        source_dir = os.path.join('templates', directory.replace('project_name', project_name))
+    for directory in structure.get("directories", []):
+        dir_path = os.path.join(
+            project_path, directory.replace("project_name", project_name)
+        )
+        source_dir = os.path.join(
+            "templates", directory.replace("project_name", project_name)
+        )
 
         if os.path.exists(source_dir):  # Si hay un directorio plantilla, copiarlo
             shutil.copytree(source_dir, dir_path, dirs_exist_ok=True)
@@ -26,9 +41,11 @@ def create_structure(project_name, project_path, structure):
             print(f"Creado directorio: {dir_path}")
 
     # Crear archivos
-    for file_path in structure.get('files', []):
-        file_path = os.path.join(project_path, file_path.replace('project_name', project_name))
-        source_file = os.path.join('templates', os.path.basename(file_path))
+    for file_path in structure.get("files", []):
+        file_path = os.path.join(
+            project_path, file_path.replace("project_name", project_name)
+        )
+        source_file = os.path.join("templates", os.path.basename(file_path))
         dir_path = os.path.dirname(file_path)
         os.makedirs(dir_path, exist_ok=True)  # Asegurarse de que el directorio exista
 
@@ -36,8 +53,9 @@ def create_structure(project_name, project_path, structure):
             shutil.copy(source_file, file_path)
             print(f"Copiado archivo: {file_path} desde plantilla.")
         else:  # Si no, crearlo vacío
-            open(file_path, 'w').close()
+            open(file_path, "w").close()
             print(f"Creado archivo vacío: {file_path}")
+
 
 def main():
     if len(sys.argv) < 2 or len(sys.argv) > 3:
@@ -49,10 +67,14 @@ def main():
 
     templates = load_templates()
 
-    template = sys.argv[2] if len(sys.argv) > 2 else 'default-c++'  # Usar plantilla por defecto
+    template = (
+        sys.argv[2] if len(sys.argv) > 2 else "default-c++"
+    )  # Usar plantilla por defecto
     if template not in templates:
-        print(f"Advertencia: Plantilla '{template}' no encontrada. Usando plantilla por defecto.")
-        template = 'default-c++'
+        print(
+            f"Advertencia: Plantilla '{template}' no encontrada. Usando plantilla por defecto."
+        )
+        template = "default-c++"
 
     structure = templates.get(template)
     if not structure:
@@ -69,5 +91,6 @@ def main():
     create_structure(project_name, project_path, structure)
     print(f"Proyecto '{project_name}' configurado con la plantilla '{template}'.")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

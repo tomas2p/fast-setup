@@ -48,7 +48,7 @@ python fast-setup.py <project_name> [template]
 
 Arguments:
 - `<project_name>`: The name of your project.
-- `[template]`: (Optional) The name of the template to use. Defaults to `default`.
+- `[template]`: (Optional) The name of the template to use. Defaults to `default-c++`.
 
 ### Example
 
@@ -61,7 +61,7 @@ python fast-setup.py MyNewProject
 Templates are defined in the `structure.json` file and look like this:
 ```json
 {
-  "default": {
+  "default-c++": {
     "directories": ["docs", "src", "src/project_name", "data"],
     "files": ["docs/README.md", "src/main.cc", "src/project_name/*.cc", "src/project_name/*.h", "data/input.txt", "Makefile"]
   }

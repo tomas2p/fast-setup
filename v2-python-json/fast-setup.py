@@ -49,10 +49,10 @@ def main():
 
     templates = load_templates()
 
-    template = sys.argv[2] if len(sys.argv) > 2 else 'default'  # Usar plantilla por defecto
+    template = sys.argv[2] if len(sys.argv) > 2 else 'default-c++'  # Usar plantilla por defecto
     if template not in templates:
         print(f"Advertencia: Plantilla '{template}' no encontrada. Usando plantilla por defecto.")
-        template = 'default'
+        template = 'default-c++'
 
     structure = templates.get(template)
     if not structure:

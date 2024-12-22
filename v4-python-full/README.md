@@ -59,7 +59,7 @@ python fast-setup.py MyNewProject
 
 ## Templates
 
-Templates are defined in the `structure.yaml` file and look like this:
+Templates are defined in the `structure.yaml` file or `structure.json` file, prioritized in this order and look like this:
 ```yaml
 default-c++:
   directories:
@@ -75,6 +75,14 @@ default-c++:
     - data/input.txt
     - Makefile
 
+```
+```json
+{
+  "default-c++": {
+    "directories": ["docs", "src", "src/project_name", "data"],
+    "files": ["docs/README.md", "src/main.cc", "src/project_name/*.cc", "src/project_name/*.h", "data/input.txt", "Makefile"]
+  }
+}
 ```
 
 ### Template Folder

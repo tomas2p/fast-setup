@@ -22,6 +22,12 @@ The latest and most advanced version uses Python with a YAML configuration file.
 
 [More details in the Python-YAML version README](v3-python-yaml/README.md)
 
+### 4. Python with JSON and YAML
+
+The latest and most advanced version uses Python with a YAML configuration file and a JSON configuration file. This approach improves readability and flexibility, making it suitable for more complex or detailed configurations.
+
+[More details in the Python-JSON-YAML version README](v4-python-full/README.md)
+
 ## Purpose
 
 The goal of this project is to provide a flexible tool for both beginners and experienced developers, exploring different languages and configuration formats to meet diverse needs and preferences.
