@@ -160,3 +160,11 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+
+# --- Ajustes extra para fast-setup ---
+
+# Ignorar artefactos de build de setuptools/pep517
+*.whl
+
+# ⚠️ Mantener legacy en el repo, pero NO empaquetarlo
+# (no hace falta ignorarlo, setuptools no lo incluye al no estar en pyproject.toml)

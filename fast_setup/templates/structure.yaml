@@ -11,3 +11,11 @@ default-c++:
     - src/project_name/project_name.h
     - data/input.txt
     - Makefile
+default-python:
+  directories:
+    - docs
+    - src
+    - data
+  files:
+    - docs/README.md
+    - src/main.py

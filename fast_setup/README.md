@@ -1,6 +1,6 @@
 # Fast-Setup
 
-**Fast-Setup** es una herramienta para automatizar la creación de proyectos mediante plantillas YAML/JSON personalizables.
+**Fast-Setup** es una herramienta de línea de comandos para automatizar la creación de proyectos mediante plantillas personalizables.
 
 ## Índice
 1. [Índice](#índice)
@@ -10,23 +10,17 @@
 5. [Personalización](#personalización)
 6. [Tests](#tests)
 7. [Estructura del Proyecto](#estructura-del-proyecto)
-8. [Versiones Legacy](#versiones-legacy)
+8. [Sobre los README](#sobre-los-readme)
 9. [Licencia](#licencia)
 
 ## Acerca de
-Fast-Setup ahorra tiempo generando la estructura de carpetas y archivos de tus proyectos, usando una plantilla YAML/JSON centralizada y archivos base opcionales.
+Fast-Setup ahorra tiempo generando la estructura de carpetas y archivos de tus proyectos, usando una plantilla YAML centralizada y archivos base opcionales.
 
 Autor: Tomás Pino Pérez
 
 ## Instalación
 
-**Para usuarios:**
-- Instala el paquete desde PyPI (próximamente) o descarga el release y ejecútalo directamente.
-- Al instalar, solo necesitas el script y la plantilla de usuario en `~/.config/fast-setup/`.
-
-**Para desarrolladores:**
-- Clona el repositorio para modificar, probar o contribuir.
-- Instala en modo editable y ejecuta los tests.
+Recomendado: usar entorno virtual.
 
 ```sh
 python -m venv .venv
@@ -44,7 +38,7 @@ python -m fast_setup.fast_setup MiProyecto default-c++ --force
 
 Argumentos:
 - `<nombre_proyecto>`: Nombre del proyecto.
-- `[plantilla]`: (Opcional) Nombre de la plantilla definida en `structure.yaml` o `structure.json`.
+- `[plantilla]`: (Opcional) Nombre de la plantilla definida en `structure.yaml`.
 - `--force`: Sobrescribe el directorio si ya existe.
 
 Para ver ayuda:
@@ -54,7 +48,7 @@ python -m fast_setup.fast_setup --help
 
 ## Personalización
 
-- Edita `~/.config/fast-setup/structure.yaml` o `structure.json` para definir todas tus plantillas y estructuras.
+- Edita `~/.config/fast-setup/structure.yaml` para definir todas tus plantillas y estructuras.
 - Coloca archivos base en `~/.config/fast-setup/files/` para que se copien automáticamente si se solicitan en la plantilla.
 
 Ejemplo de estructura de configuración del usuario:
@@ -87,7 +81,7 @@ default-c++:
 
 Ejecuta las pruebas unitarias:
 ```sh
-pytest --cov=fast_setup tests/
+pytest tests/
 ```
 
 ## Estructura del Proyecto
@@ -106,25 +100,18 @@ fast-setup/
 ├── tests/
 │   └── test_fast_setup.py
 ├── legacy/
-│   ├── v1-bash/README.md
-│   ├── v2-python-json/README.md
-│   ├── v3-python-yaml/README.md
-│   └── v4-python-full/README.md
+│   └── ...
 ├── LICENSE
 ├── pyproject.toml
 └── README.md
 ```
 
-## Versiones Legacy
+## Sobre los README
 
-El proyecto incluye versiones anteriores para referencia y comparación:
-- [Bash](legacy/v1-bash/README.md)
-- [Python con JSON](legacy/v2-python-json/README.md)
-- [Python con YAML](legacy/v3-python-yaml/README.md)
-- [Python FULL (YAML/JSON)](legacy/v4-python-full/README.md)
-
-Consulta los README en cada subcarpeta para detalles y ejemplos históricos.
+- El README principal (`/README.md`) explica el propósito general y las versiones históricas.
+- El README de `fast_setup/` (este archivo) explica el uso moderno, instalación y personalización del script actual.
+- Los README en `legacy/` y subversiones documentan los enfoques antiguos (bash, python-json, python-yaml) y sirven como referencia o para comparar tecnologías.
 
 ## Licencia
 
-Este proyecto está bajo la licencia MIT. Consulta el archivo [LICENSE](LICENSE) para más detalles.
+Este proyecto está bajo la licencia MIT. Consulta el archivo [LICENSE](../LICENSE) para más detalles.
