@@ -26,12 +26,12 @@ Autor: Tomás Pino Pérez
 
 **Para desarrolladores:**
 - Clona el repositorio para modificar, probar o contribuir.
-- Instala en modo editable y ejecuta los tests.
+- Instala las dependencias desde `requirements.txt` y ejecuta los tests.
 
 ```sh
 python -m venv .venv
 source .venv/bin/activate
-pip install -e .
+pip install -r requirements.txt
 ```
 
 ## Uso
@@ -87,7 +87,12 @@ default-c++:
 
 Ejecuta las pruebas unitarias:
 ```sh
-pytest --cov=fast_setup tests/
+pytest --cov=fast_setup --cov-report=term-missing tests/
+```
+O instala las dependencias primero si es la primera vez:
+```sh
+pip install -r requirements.txt
+pytest --cov=fast_setup --cov-report=term-missing tests/
 ```
 
 ## Estructura del Proyecto
