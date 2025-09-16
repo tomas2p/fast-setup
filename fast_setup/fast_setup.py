@@ -4,6 +4,7 @@ import yaml
 import shutil
 import sys
 import importlib.resources
+import importlib.util
 import logging
 # Configuración básica de logging
 logging.basicConfig(
@@ -27,13 +28,23 @@ def load_template_file(filename, user_first=True):
                 return json.load(f)
     # Si no existe, buscar en el paquete
     try:
-        with importlib.resources.files("fast_setup.templates").joinpath(filename).open("r") as f:
-            if filename.endswith(".yaml") or filename.endswith(".yml"):
-                logging.info(f"Cargando plantilla interna: {filename}")
-                return yaml.safe_load(f)
-            elif filename.endswith(".json"):
-                logging.info(f"Cargando plantilla interna: {filename}")
-                return json.load(f)
+        if importlib.util.find_spec("importlib.resources.files"):
+            with importlib.resources.files("fast_setup.templates").joinpath(filename).open("r") as f:
+                if filename.endswith(".yaml") or filename.endswith(".yml"):
+                    logging.info(f"Cargando plantilla interna: {filename}")
+                    return yaml.safe_load(f)
+                elif filename.endswith(".json"):
+                    logging.info(f"Cargando plantilla interna: {filename}")
+                    return json.load(f)
+        else:
+            with importlib.resources.path("fast_setup.templates", filename) as path:
+                with open(path, "r") as f:
+                    if filename.endswith(".yaml") or filename.endswith(".yml"):
+                        logging.info(f"Cargando plantilla interna: {filename}")
+                        return yaml.safe_load(f)
+                    elif filename.endswith(".json"):
+                        logging.info(f"Cargando plantilla interna: {filename}")
+                        return json.load(f)
     except FileNotFoundError:
         return None
 
