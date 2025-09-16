@@ -1,9 +1,12 @@
+import sys
 import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'fast_setup')))
+from fast_setup import fast_setup
+
 import shutil
 import tempfile
 import yaml
 import pytest
-from fast_setup import fast_setup
 
 @pytest.fixture(autouse=True)
 def cleanup_proyecto_root():
