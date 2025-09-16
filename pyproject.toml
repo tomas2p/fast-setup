@@ -7,7 +7,7 @@ name = "fast-setup"
 version = "0.5.0"
 description = "Herramienta para generar estructuras de proyecto rápidamente"
 authors = [{ name = "Tomás Pino Pérez" }]
-dependencies = ["pyyaml"]
+dependencies = ["pyyaml", "toml"]
 
 [project.scripts]
 fast-setup = "fast_setup.fast_setup:main"
@@ -16,4 +16,4 @@ fast-setup = "fast_setup.fast_setup:main"
 packages = ["fast_setup"]
 
 [tool.setuptools.package-data]
-fast_setup = ["templates/*"]
+fast_setup = ["templates/*", "../pyproject.toml"]

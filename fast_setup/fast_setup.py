@@ -6,6 +6,10 @@ import sys
 import importlib.resources
 import importlib.util
 import logging
+import argparse
+import toml
+import gettext
+
 # Configuración básica de logging
 logging.basicConfig(
     level=logging.INFO,
@@ -14,6 +18,11 @@ logging.basicConfig(
 
 # Carpeta de configuración y plantillas del usuario (minimalista)
 USER_CONFIG_DIR = os.path.expanduser("~/.config/fast-setup")
+
+# Configuración de traducción para argparse
+gettext.bindtextdomain('argparse', '/usr/share/locale')
+gettext.textdomain('argparse')
+_ = gettext.gettext
 
 def load_template_file(filename, user_first=True):
     """Carga el contenido de un archivo de plantilla desde usuario o paquete."""
@@ -28,7 +37,7 @@ def load_template_file(filename, user_first=True):
                 return json.load(f)
     # Si no existe, buscar en el paquete
     try:
-        if importlib.util.find_spec("importlib.resources.files"):
+        if hasattr(importlib.resources, 'files'):
             with importlib.resources.files("fast_setup.templates").joinpath(filename).open("r") as f:
                 if filename.endswith(".yaml") or filename.endswith(".yml"):
                     logging.info(f"Cargando plantilla interna: {filename}")
@@ -45,7 +54,8 @@ def load_template_file(filename, user_first=True):
                     elif filename.endswith(".json"):
                         logging.info(f"Cargando plantilla interna: {filename}")
                         return json.load(f)
-    except FileNotFoundError:
+    except (FileNotFoundError, ModuleNotFoundError) as e:
+        logging.error(f"Error al cargar la plantilla: {e}")
         return None
 
 def copy_example_templates():
@@ -132,7 +142,32 @@ Ejemplo:
 """
         print(help_text)
 
+def get_version():
+    # Busca el archivo pyproject.toml en el sistema de archivos
+    possible_paths = [
+        os.path.join(os.path.dirname(__file__), "../pyproject.toml"),  # Ruta relativa al script
+        os.path.join(sys.prefix, "pyproject.toml"),  # Ruta en el entorno virtual o sistema
+    ]
+
+    for path in possible_paths:
+        if os.path.exists(path):
+            try:
+                with open(path, "r") as f:
+                    pyproject_data = toml.load(f)
+                    return pyproject_data.get("project", {}).get("version", "Versión desconocida")
+            except Exception as e:
+                return f"Error al leer la versión: {e}"
+
+    return "Archivo pyproject.toml no encontrado"
+
 def main():
+    parser = argparse.ArgumentParser(
+        description="Fast Setup Utility",
+        prog="fast-setup"  # Asegura que el nombre del programa sea consistente
+    )
+    parser.add_argument("-v", "--version", action="version", version=f"fast-setup {get_version()}", help="Muestra la versión del programa")
+    args = parser.parse_args()
+
     args = sys.argv[1:]
     if len(args) == 1 and args[0] in ("-h", "--help"):
         print_help()
