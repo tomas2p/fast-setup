@@ -3,13 +3,13 @@
 # Uso: ./generate_project.sh <nombre_proyecto> [opciones]
 # Autor: Tomás Pino Pérez
 # Fecha: 18/09/2025
-# Versión: 5.0.2
+# Versión: 5.0.3
 # Repositorio: https://github.com/tomas2p/fast-setup
 # Licencia: MIT
 
 VERSION=$(grep -i '^# Versión:' "$0" | head -n1 | awk '{print $3}')
 USER_CONFIG_DIR="$HOME/.config/fast-setup"
-TEMPLATE_FILE="$USER_CONFIG_DIR/templates.conf"
+TEMPLATE_FILE="$USER_CONFIG_DIR/template.conf"
 DEFAULT_TEMPLATE="default-c++"
 
 # -------------------
