@@ -1,126 +1,138 @@
-# Fast-Setup
+# 🛠️ Fast Project Setup
 
-**Fast-Setup** es una herramienta para automatizar la creación de proyectos mediante plantillas YAML/JSON personalizables.
+[![Version](https://img.shields.io/badge/version-5.0-blue)](https://github.com/tomas2p/fast-setup)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-## Índice
-1. [Índice](#índice)
-2. [Acerca de](#acerca-de)
-3. [Instalación](#instalación)
-4. [Uso](#uso)
-5. [Personalización](#personalización)
-6. [Tests](#tests)
-7. [Estructura del Proyecto](#estructura-del-proyecto)
-8. [Versiones Legacy](#versiones-legacy)
-9. [Licencia](#licencia)
+Script ligero para crear estructuras de proyectos a partir de plantillas predefinidas.
 
-## Acerca de
-Fast-Setup ahorra tiempo generando la estructura de carpetas y archivos de tus proyectos, usando una plantilla YAML/JSON centralizada y archivos base opcionales.
+Ideal para proyectos en **C++**, **Python** o cualquier otro lenguaje donde quieras empezar rápido sin repetir siempre lo mismo.
 
-Autor: Tomás Pino Pérez
+---
 
-## Instalación
+## 📥 Instalación
 
-**Para usuarios:**
-- Instala el paquete desde PyPI (próximamente) o descarga el release y ejecútalo directamente.
-- Al instalar, solo necesitas el script y la plantilla de usuario en `~/.config/fast-setup/`.
+1. Clonar el repositorio:
 
-**Para desarrolladores:**
-- Clona el repositorio para modificar, probar o contribuir.
-- Instala las dependencias desde `requirements.txt` y ejecuta los tests.
+```bash
+git clone https://github.com/tomas2p/fast-setup.git
+cd fast-setup
+````
 
-```sh
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+2. Ejecutar el script de instalación:
+
+```bash
+./install_fast-setup.sh
 ```
 
-## Uso
+Esto hará:
 
-Crea un nuevo proyecto:
-```sh
-python -m fast_setup.fast_setup MiProyecto
-python -m fast_setup.fast_setup MiProyecto default-c++ --force
+* Copiar `fast-setup.sh` a `~/.local/bin/fast-setup`
+* Copiar `templates.conf` y la carpeta `templates/` a `~/.config/fast-setup/`
+
+> Asegúrate de que `~/.local/bin` esté en tu `$PATH` para ejecutar el comando `fast-setup` desde cualquier lugar.
+
+---
+
+## 🚀 Uso del script
+
+```bash
+fast-setup <nombre_proyecto> [opciones]
 ```
 
-Argumentos:
-- `<nombre_proyecto>`: Nombre del proyecto.
-- `[plantilla]`: (Opcional) Nombre de la plantilla definida en `structure.yaml` o `structure.json`.
-- `--force`: Sobrescribe el directorio si ya existe.
+### 🔹 Plantillas
 
-Para ver ayuda:
-```sh
-python -m fast_setup.fast_setup --help
+* Las plantillas se definen en un único archivo:
+
+```bash
+~/.config/fast-setup/templates.conf
 ```
 
-## Personalización
+* Cada plantilla puede contener **carpetas y archivos**, separados por `:`
+* Los archivos existentes en la carpeta `templates/` (junto a `templates.conf`) se copian automáticamente al proyecto.
+* Si no existen, se crean vacíos.
 
-- Edita `~/.config/fast-setup/structure.yaml` o `structure.json` para definir todas tus plantillas y estructuras.
-- Coloca archivos base en `~/.config/fast-setup/files/` para que se copien automáticamente si se solicitan en la plantilla.
+#### Ejemplo de `templates.conf`:
 
-Ejemplo de estructura de configuración del usuario:
-```
-~/.config/fast-setup/
-├── structure.yaml
-└── files/
-    ├── Makefile
-    └── README.md
-```
+```ini
+[default]
+docs
+src:main.cpp,project.h
+data:input.txt
+.:Makefile
 
-Ejemplo de plantilla YAML:
-```yaml
-default-c++:
-  directories:
-    - docs
-    - src
-    - src/project_name
-    - data
-  files:
-    - docs/README.md
-    - src/main.cc
-    - src/project_name/project_name.cc
-    - src/project_name/project_name.h
-    - data/input.txt
-    - Makefile
+[python]
+src:main.py
+tests:test_main.py
+requirements.txt
 ```
 
-## Tests
+* `.:Makefile` → copia `Makefile` desde `templates/Makefile` a la raíz del proyecto
+* `src:main.cpp,project.h` → crea carpeta `src` con los archivos listados
 
-Ejecuta las pruebas unitarias:
-```sh
-pytest --cov=fast_setup --cov-report=term-missing tests/
-```
-O instala las dependencias primero si es la primera vez:
-```sh
-pip install -r requirements.txt
-pytest --cov=fast_setup --cov-report=term-missing tests/
+---
+
+### ▶️ Opciones del script
+
+| Opción                                | Descripción                                          |
+| ------------------------------------- | ---------------------------------------------------- |
+| `-h`, `--help`                        | Muestra la ayuda                                     |
+| `-v`, `--version`                     | Muestra la versión del script                        |
+| `-l`, `--list`                        | Lista las plantillas disponibles                     |
+| `-t <template>`                       | Selecciona la plantilla (por defecto: `default`)     |
+| `--force`                             | Sobrescribe el directorio si ya existe               |
+| `-p <path>`, `--template-path <path>` | Especifica un archivo `templates.conf` personalizado |
+
+---
+
+### 📌 Ejemplos de uso
+
+```bash
+# Crear un proyecto con la plantilla por defecto
+fast-setup MiProyecto
+
+# Crear un proyecto usando la plantilla Python
+fast-setup MiProyecto -t python
+
+# Sobrescribir un proyecto existente
+fast-setup MiProyecto -t default --force
+
+# Usar un archivo de plantillas personalizado
+fast-setup MiProyecto -p ~/mis-plantillas/templates.conf -t python
+
+# Listar plantillas disponibles
+fast-setup -l
 ```
 
-## Estructura del Proyecto
+---
+
+## 📝 Notas importantes
+
+* Todos los archivos existentes en la carpeta `templates/` relativa al `templates.conf` se copiarán al proyecto automáticamente (ej. `Makefile`).
+* Archivos que no existan se crean vacíos.
+* La opción `--template-path` permite usar diferentes colecciones de plantillas según tu flujo de trabajo.
+* Mantener `legacy/` para referencia de versiones anteriores.
+
+### Estructura del Proyecto
 
 ```
 fast-setup/
-├── fast_setup/
-│   ├── fast_setup.py
-│   ├── __init__.py
-│   ├── templates/
-│   │   ├── structure.yaml
-│   │   ├── structure.json
-│   │   ├── Makefile
-│   │   └── ...
-│   └── README.md
-├── tests/
-│   └── test_fast_setup.py
+├── fast-setup/
+│   ├── fast-setup.sh
+│   └── templates/
+│       ├── template.conf
+│       ├── makefile
+│       └── ...
 ├── legacy/
 │   ├── v1-bash/README.md
 │   ├── v2-python-json/README.md
 │   ├── v3-python-yaml/README.md
 │   └── v4-python-full/README.md
+├── install_fast_setup.sh
 ├── LICENSE
-├── pyproject.toml
 └── README.md
 ```
 
-## Versiones Legacy
+### Versiones Legacy
 
 El proyecto incluye versiones anteriores para referencia y comparación:
 - [Bash](legacy/v1-bash/README.md)
@@ -130,6 +142,8 @@ El proyecto incluye versiones anteriores para referencia y comparación:
 
 Consulta los README en cada subcarpeta para detalles y ejemplos históricos.
 
-## Licencia
+---
 
-Este proyecto está bajo la licencia MIT. Consulta el archivo [LICENSE](LICENSE) para más detalles.
+### ⚖️ Licencia
+
+MIT License – ver archivo [LICENSE](LICENSE)

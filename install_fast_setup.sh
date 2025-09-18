@@ -1,75 +1,37 @@
-#!/usr/bin/env bash
+#!/bin/bash
+# Install script para Fast Project Setup v5
+# Autor: Tomás Pino Pérez
+# Fecha: 18/09/2025
+# Licencia: MIT
 
-# Detecta si se está ejecutando en fish o bash
-SHELL_TYPE=$(ps -p $$ -o comm=)
+set -e
 
-# Función para activar el entorno virtual
-activate_venv() {
-  if [[ "$SHELL_TYPE" == "fish" ]]; then
-    source "$1/bin/activate.fish"
-  else
-    source "$1/bin/activate"
-  fi
-}
+# Directorios destino
+BIN_DIR="$HOME/.local/bin"
+CONFIG_DIR="$HOME/.config/fast-setup"
 
-# Pregunta al usuario si desea usar pipx
-read -p "¿Deseas usar pipx para instalar el paquete? (s/n): " USE_PIPX
-if [[ "$USE_PIPX" == "s" || "$USE_PIPX" == "S" ]]; then
-  if ! command -v pipx &> /dev/null; then
-    echo "pipx no está instalado. Instalándolo..."
-    if command -v pacman &> /dev/null; then
-      sudo pacman -S python-pipx
-    elif command -v apt &> /dev/null; then
-      sudo apt install pipx
-    elif command -v brew &> /dev/null; then
-      brew install pipx
-    else
-      echo "Error: No se pudo determinar el gestor de paquetes para instalar pipx."
-      exit 1
-    fi
-  fi
-  echo "Instalando el paquete con pipx..."
-  pipx install .
-  if [[ $? -ne 0 ]]; then
-    echo "Error: No se pudo instalar el paquete con pipx."
-    exit 1
-  fi
-  echo "El paquete se ha instalado correctamente con pipx."
-  exit 0
+# Archivos a copiar (ajusta si cambian de ubicación en tu repo)
+SCRIPT_SRC="./fast-setup/fast-setup.sh"
+TEMPLATE_DIR_SRC="./fast-setup/templates"
+
+# Crear directorios si no existen
+mkdir -p "$BIN_DIR"
+mkdir -p "$CONFIG_DIR"
+
+# Copiar el script
+cp "$SCRIPT_SRC" "$BIN_DIR/fast-setup"
+chmod +x "$BIN_DIR/fast-setup"
+echo "Script instalado en $BIN_DIR/fast-setup"
+
+# Copiar carpeta de templates
+if [[ -d "$TEMPLATE_DIR_SRC" ]]; then
+    cp -r "$TEMPLATE_DIR_SRC" "$CONFIG_DIR/templates"
+    echo "Carpeta de templates copiada a $CONFIG_DIR/templates/"
 fi
 
-# Verifica si se está ejecutando en un entorno virtual
-if [[ -z "$VIRTUAL_ENV" ]]; then
-  echo "No estás en un entorno virtual. Creando uno..."
-  read -p "Especifica el directorio para el entorno virtual (por defecto: $HOME/fast_setup_venv): " VENV_DIR
-  VENV_DIR=${VENV_DIR:-$HOME/fast_setup_venv}
-  python -m venv "$VENV_DIR"
-  if [[ $? -ne 0 ]]; then
-    echo "Error: No se pudo crear el entorno virtual. Verifica los permisos o la configuración de Python."
-    exit 1
-  fi
-  activate_venv "$VENV_DIR"
+# Verificación final
+if command -v fast-setup >/dev/null 2>&1; then
+    echo "Instalación completada correctamente. Ejecuta 'fast-setup -h' para ver la ayuda."
 else
-  echo "Ya estás en un entorno virtual."
-fi
-
-# Instala el paquete en modo editable
-echo "Instalando el paquete en modo editable..."
-python -m pip install --upgrade pip setuptools
-if [[ $? -ne 0 ]]; then
-  echo "Error: No se pudo actualizar pip o setuptools."
-  exit 1
-fi
-python -m pip install -e .
-if [[ $? -ne 0 ]]; then
-  echo "Error: No se pudo instalar el paquete."
-  exit 1
-fi
-
-# Verifica si el comando está disponible
-if command -v fast-setup &> /dev/null; then
-  echo "El comando 'fast-setup' se ha instalado correctamente."
-else
-  echo "Hubo un problema al instalar el comando 'fast-setup'."
-  exit 1
+    echo "Advertencia: ~/.local/bin no está en tu PATH. Añádelo para poder ejecutar 'fast-setup' desde cualquier lugar."
 fi

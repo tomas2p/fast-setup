@@ -19,7 +19,13 @@ BUILD_DIR=build
 DIR_NAME=$(shell basename $(shell realpath .))
 
 # Definir el objetivo "all" para compilar
-all: build run
+# all: build run
+
+# Regla para compilar y luego ejecutar
+dev: build run
+
+# Regla para compilar y luego comprimir
+release: build tar
 
 # Regla para construir el programa y crear la carpeta de construcción
 build: dir program
