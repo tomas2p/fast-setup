@@ -1,5 +1,5 @@
 #!/bin/bash
-# Install script para Fast Project Setup v5
+# Install script para Fast Project Setup v5-bash
 # Autor: Tomás Pino Pérez
 # Fecha: 18/09/2025
 # Licencia: MIT
@@ -25,8 +25,8 @@ echo "Script instalado en $BIN_DIR/fast-setup"
 
 # Copiar carpeta de templates
 if [[ -d "$TEMPLATE_DIR_SRC" ]]; then
-    cp -r "$TEMPLATE_DIR_SRC" "$CONFIG_DIR/templates"
-    echo "Carpeta de templates copiada a $CONFIG_DIR/templates/"
+  cp "$TEMPLATE_DIR_SRC"/* "$CONFIG_DIR/"
+  echo "Archivos de templates copiados a $CONFIG_DIR/"
 fi
 
 # Verificación final

@@ -1,7 +1,7 @@
 # 🛠️ Fast Project Setup
 
-[![Version](https://img.shields.io/badge/version-5.0-blue)](https://github.com/tomas2p/fast-setup)
-[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![Version](https://img.shields.io/badge/version-5.0-blue?style=for-the-badge)](https://github.com/tomas2p/fast-setup)
+[![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)](LICENSE)
 
 Script ligero para crear estructuras de proyectos a partir de plantillas predefinidas.
 
@@ -58,7 +58,7 @@ fast-setup <nombre_proyecto> [opciones]
 docs
 src:main.cpp,project.h
 data:input.txt
-.:Makefile
+.:makefile
 
 [python]
 src:main.py
@@ -66,7 +66,7 @@ tests:test_main.py
 requirements.txt
 ```
 
-* `.:Makefile` → copia `Makefile` desde `templates/Makefile` a la raíz del proyecto
+* `.:makefile` → copia `makefile` desde `templates/makefile` a la raíz del proyecto
 * `src:main.cpp,project.h` → crea carpeta `src` con los archivos listados
 
 ---
@@ -107,7 +107,7 @@ fast-setup -l
 
 ## 📝 Notas importantes
 
-* Todos los archivos existentes en la carpeta `templates/` relativa al `templates.conf` se copiarán al proyecto automáticamente (ej. `Makefile`).
+* Todos los archivos existentes en la carpeta `templates/` relativa al `templates.conf` se copiarán al proyecto automáticamente (ej. `makefile`).
 * Archivos que no existan se crean vacíos.
 * La opción `--template-path` permite usar diferentes colecciones de plantillas según tu flujo de trabajo.
 * Mantener `legacy/` para referencia de versiones anteriores.
