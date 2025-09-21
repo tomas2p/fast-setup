@@ -31,7 +31,7 @@ usage() {
     echo "  --dry-run                Muestra las acciones que se realizarían sin crear ni modificar archivos"
     echo "  --allow-unsafe-name      Permite nombres de proyecto con caracteres no estándar (no recomendado)"
     echo "  -p, --template-path PATH Especifica la ruta al archivo templates.conf"
-    echo "                            El placeholder '{{PROJECT}}' en `template.conf` será sustituido automáticamente por el nombre del proyecto (usa --no-placeholder para desactivar)"
+    echo "  --no-placeholder         Desactiva el placeholder '{{PROJECT}}' en `template.conf` para no ser sustituido automáticamente por el nombre del proyecto"
     exit 0
 }
 
