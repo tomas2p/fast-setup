@@ -1,6 +1,6 @@
 # 🛠️ Fast Project Setup
 
-[![Version](https://img.shields.io/badge/version-5.0-blue?style=for-the-badge)](https://github.com/tomas2p/fast-setup)
+[![Version](https://img.shields.io/badge/version-5.0.4-blue?style=for-the-badge)](https://github.com/tomas2p/fast-setup)
 [![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)](LICENSE)
 
 Script ligero para crear estructuras de proyectos a partir de plantillas predefinidas.
@@ -21,13 +21,13 @@ cd fast-setup
 2. Ejecutar el script de instalación:
 
 ```bash
-./install_fast-setup.sh
+./install.sh
 ```
 
 Esto hará:
 
 * Copiar `fast-setup.sh` a `~/.local/bin/fast-setup`
-* Copiar `templates.conf` y la carpeta `templates/` a `~/.config/fast-setup/`
+* Copiar la carpeta `templates/` que contiene plantillas y `template.conf` a `~/.config/fast-setup/`
 
 > Asegúrate de que `~/.local/bin` esté en tu `$PATH` para ejecutar el comando `fast-setup` desde cualquier lugar.
 
@@ -41,24 +41,26 @@ fast-setup <nombre_proyecto> [opciones]
 
 ### 🔹 Plantillas
 
-* Las plantillas se definen en un único archivo:
+* Las plantillas se definen en un único archivo de configuración:
 
 ```bash
-~/.config/fast-setup/templates.conf
+~/.config/fast-setup/template.conf
 ```
 
 * Cada plantilla puede contener **carpetas y archivos**, separados por `:`
-* Los archivos existentes en la carpeta `templates/` (junto a `templates.conf`) se copian automáticamente al proyecto.
+* Los archivos existentes en la carpeta `templates/` (junto a `template.conf`) se copian automáticamente al proyecto.
 * Si no existen, se crean vacíos.
 
-#### Ejemplo de `templates.conf`:
+#### Ejemplo de `template.conf`:
 
 ```ini
-[default]
-docs
-src:main.cpp,project.h
+[default-c++]
+src:main_{{PROJECT}}.cc,{{PROJECT}}.h
+include:{{PROJECT}}.h
 data:input.txt
-.:makefile
+docs
+.:README.md
+.:Makefile
 
 [python]
 src:main.py
@@ -66,21 +68,75 @@ tests:test_main.py
 requirements.txt
 ```
 
-* `.:makefile` → copia `makefile` desde `templates/makefile` a la raíz del proyecto
+* `.:Makefile` → copia `Makefile` desde `templates/Makefile` a la raíz del proyecto
 * `src:main.cpp,project.h` → crea carpeta `src` con los archivos listados
+
+#### Placeholder: `{{PROJECT}}`
+
+El placeholder `{{PROJECT}}` se usa dentro de `template.conf` y en los archivos dentro de la carpeta `templates/` para indicar el nombre del proyecto que suministres al ejecutar el script.
+
+- Sustitución por defecto: cuando ejecutas `fast-setup MiProyecto`, el script reemplaza todas las ocurrencias de `{{PROJECT}}` por `MiProyecto` en:
+	- Nombres de carpetas definidos en `template.conf`.
+	- Nombres de archivos listados en `template.conf`.
+	- Contenido de archivos copiados desde `templates/` si contienen `{{PROJECT}}`.
+
+- Ejemplo de uso:
+
+	`template.conf`:
+
+	```ini
+	[default-c++]
+	src:main_{{PROJECT}}.cc,{{PROJECT}}.h
+	.:README.md
+	```
+
+	Al ejecutar `fast-setup MyLib -t default-c++` se generan `src/main_MyLib.cc`, `src/MyLib.h` y `README.md` cuyo contenido tendrá `MyLib` si el `templates/README.md` contenía `{{PROJECT}}`.
+
+- Desactivar sustituciones: si pasas la opción `--no-placeholder` al script, el texto `{{PROJECT}}` no se reemplaza y quedará literalmente en los nombres y contenido (por ejemplo `main_{{PROJECT}}.cc`).
+
+- Casos importantes a tener en cuenta:
+	- El reemplazo se realiza con `sed` y no es seguro para binarios; evita usar `{{PROJECT}}` en plantillas binarias.
+	- La sustitución es literal y sensible a mayúsculas: `{{project}}` no es lo mismo que `{{PROJECT}}`.
+	- Si quieres transformar el nombre (mayúsculas/minúsculas) o usar otras variantes, puedo añadir soporte para `{{PROJECT_UPPER}}`/`{{PROJECT_LOWER}}`.
+
+- Transformaciones disponibles:
+	- `{{PROJECT_UPPER}}` → nombre del proyecto en mayúsculas.
+	- `{{PROJECT_LOWER}}` → nombre del proyecto en minúsculas.
+	Estas variantes funcionan tanto en nombres (carpetas/archivos) como en el contenido de archivos dentro de `templates/`.
+
+- Nombres no seguros y validación:
+	- Por defecto el script valida que `PROJECT_NAME` use solo caracteres alfanuméricos, guiones, guiones bajos y puntos (`[A-Za-z0-9._-]`).
+	- Si necesitas usar caracteres especiales, pasa la opción `--allow-unsafe-name` (no recomendado; responsabilidad del usuario).
+
+- `--dry-run`:
+	- Muestra las acciones que se ejecutarían sin modificar el disco (útil para comprobar la estructura resultante antes de crear archivos).
+
+---
+
+### Ejemplo de `--dry-run`
+
+```bash
+# Ver qué crearías sin ejecutar cambios
+fast-setup MiProyecto -t default-c++ --dry-run
+```
+
+Si quieres que implemente validación del nombre del proyecto o escape seguro para la sustitución en `sed`, dímelo y lo añado.
 
 ---
 
 ### ▶️ Opciones del script
 
-| Opción                                | Descripción                                          |
-| ------------------------------------- | ---------------------------------------------------- |
-| `-h`, `--help`                        | Muestra la ayuda                                     |
-| `-v`, `--version`                     | Muestra la versión del script                        |
-| `-l`, `--list`                        | Lista las plantillas disponibles                     |
-| `-t <template>`                       | Selecciona la plantilla (por defecto: `default`)     |
-| `--force`                             | Sobrescribe el directorio si ya existe               |
-| `-p <path>`, `--template-path <path>` | Especifica un archivo `templates.conf` personalizado |
+| Opción                                | Descripción                                                                                                                 |
+| ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `-h`, `--help`                        | Muestra la ayuda                                                                                                            |
+| `-v`, `--version`                     | Muestra la versión del script                                                                                               |
+| `-l`, `--list`                        | Lista las plantillas disponibles                                                                                            |
+| `-t <template>`                       | Selecciona la plantilla (por defecto: `default-c++`)                                                                        |
+| `--force`                             | Sobrescribe el directorio si ya existe                                                                                      |
+| `--dry-run`                           | Muestra las acciones que se realizarían sin crear ni modificar archivos                                                     |
+| `--allow-unsafe-name`                 | Permite nombres de proyecto con caracteres no estándar (no recomendado)                                                     |
+| `-p <path>`, `--template-path <path>` | Especifica un archivo `template.conf` personalizado                                                                         |
+| `--no-placeholder`                    | Desactiva el placeholder '{{PROJECT}}' en `template.conf` para no ser sustituido automáticamente por el nombre del proyecto |
 
 ---
 
@@ -94,10 +150,10 @@ fast-setup MiProyecto
 fast-setup MiProyecto -t python
 
 # Sobrescribir un proyecto existente
-fast-setup MiProyecto -t default --force
+fast-setup MiProyecto -t default-c++ --force
 
 # Usar un archivo de plantillas personalizado
-fast-setup MiProyecto -p ~/mis-plantillas/templates.conf -t python
+fast-setup MiProyecto -p ~/mis-plantillas/template.conf -t python
 
 # Listar plantillas disponibles
 fast-setup -l
@@ -116,18 +172,17 @@ fast-setup -l
 
 ```
 fast-setup/
-├── fast-setup/
-│   ├── fast-setup.sh
-│   └── templates/
-│       ├── template.conf
-│       ├── makefile
-│       └── ...
 ├── legacy/
 │   ├── v1-bash/README.md
 │   ├── v2-python-json/README.md
 │   ├── v3-python-yaml/README.md
 │   └── v4-python-full/README.md
-├── install_fast_setup.sh
+├── templates/
+│   ├── template.conf
+│   ├── makefile
+│   └── ...
+├── fast-setup.sh
+├── install.sh
 ├── LICENSE
 └── README.md
 ```
