@@ -20,6 +20,7 @@ PLACEHOLDER_LOWER='{{PROJECT_LOWER}}'
 # -------------------
 
 usage() {
+    echo "Fast Project Setup v$VERSION"
     echo "Uso: $0 <nombre_proyecto> [opciones]"
     echo
     echo "Opciones:"

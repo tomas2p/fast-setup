@@ -16,6 +16,8 @@
 #   make -j4        # compila en paralelo (4 hilos)
 #   make run ARGS="arg1 arg2"  # ejecuta el binario con argumentos
 #   make tar        # empaqueta usando 00_other_files/fast_tgz.sh (puede fallar si el script no está)
+#   make untar ARCHIVE=miarchivo.tgz [DEST=destino]  # descomprime un .tgz en DEST (.) (DEST opcional)
+#   make help       # muestra este mensaje de ayuda
 #   make clean      # borra build/
 #
 # Notas:
@@ -41,9 +43,9 @@ DEPFLAGS := -MMD -MP
 # Directorio base para artefactos (objetos y binario)
 BUILD_DIR := build
 
-# Buscar fuentes y mapear a objetos dentro de build/obj/
-SRCS := $(shell find src -name '*.cc')
-OBJS := $(patsubst src/%.cc,$(BUILD_DIR)/obj/%.o,$(SRCS))
+# Buscar fuentes de forma flexible: primero en src/, luego en directorio actual
+SRCS := $(shell find src -name '*.cc' 2>/dev/null || find . -maxdepth 1 -name '*.cc')
+OBJS := $(patsubst %.cc,$(BUILD_DIR)/obj/%.o,$(notdir $(SRCS)))
 
 # Ejecutable final (dentro de build/)
 TARGET := $(BUILD_DIR)/$(notdir $(CURDIR))
@@ -51,13 +53,22 @@ TARGET := $(BUILD_DIR)/$(notdir $(CURDIR))
 # Objetivo por defecto: compilar y generar el ejecutable
 all: $(TARGET)
 
-# Regla patrón: compilar cada src/%.cc -> build/obj/%.o
+# Regla patrón: compilar archivos .cc -> build/obj/%.o
+# - Busca el archivo fuente en src/ o en directorio actual
 # - Crea el directorio si es necesario
 # - Compila e invoca DEPFLAGS para generar dependencias .d
-$(BUILD_DIR)/obj/%.o: src/%.cc
+$(BUILD_DIR)/obj/%.o: 
 	@mkdir -p $(dir $@)
-	@echo "# Compiling: $<"
-	$(CXX) $(CXXFLAGS) $(DEPFLAGS) -c -o $@ $<
+	@if [ -f "src/$*.cc" ]; then \
+		echo "# Compiling: src/$*.cc"; \
+		$(CXX) $(CXXFLAGS) $(DEPFLAGS) -c -o $@ src/$*.cc; \
+	elif [ -f "$*.cc" ]; then \
+		echo "# Compiling: $*.cc"; \
+		$(CXX) $(CXXFLAGS) $(DEPFLAGS) -c -o $@ $*.cc; \
+	else \
+		echo "Error: No se encontró $*.cc"; \
+		exit 1; \
+	fi
 	@echo "+ State: $@ created"
 
 # Regla de enlace: cuando todos los .o están listos, enlaza el binario
@@ -81,6 +92,28 @@ tar:
 	@./../00_other_files/fast-tgz.sh -a -c $(CURDIR) -o $(CURDIR) || { echo "- State: fast-tgz failed"; exit 1; }
 	@echo "+ State: done"
 
+# Descomprimir un .tgz (por defecto usa $(notdir $(CURDIR)).tgz)
+# Uso: make untar ARCHIVE=miarchivo.tgz DEST=destino
+ARCHIVE ?= $(notdir $(CURDIR)).tgz
+DEST ?= .
+
+untar:
+	@echo "# Extracting: $(ARCHIVE) -> $(DEST)"
+	@if [ ! -f "$(ARCHIVE)" ]; then echo "- State: archive '$(ARCHIVE)' not found"; exit 1; fi
+	@mkdir -p $(DEST)
+	@tar -xzf $(ARCHIVE) -C $(DEST)
+	@echo "+ State: done"
+
+# Mensaje de ayuda
+help:
+	@echo "Makefile usage:"
+	@echo "  make           # compila todo (incremental)"
+	@echo "  make -j4       # compila en paralelo (4 hilos)"
+	@echo "  make run ARGS=\"arg1 arg2\"  # ejecuta el binario con argumentos"
+	@echo "  make tar       # empaqueta usando 00_other_files/fast_tgz.sh"
+	@echo "  make untar ARCHIVE=miarchivo.tgz [DEST=destino]  # descomprime un .tgz en DEST (.) (DEST opcional)"
+	@echo "  make clean     # borra build/"
+
 # Limpiar archivos generados
 clean:
 	@echo "# Cleaning"
@@ -92,4 +125,4 @@ clean:
 -include $(OBJS:.o=.d)
 
 # Objetivos que no son ficheros
-.PHONY: all run tar clean
+.PHONY: all run tar untar help clean
